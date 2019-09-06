@@ -12,54 +12,55 @@
 
 - name: Désarchiver le packet mattermost 
   unarchive: 
-    src: /tmp/mattermost-team-4.4.1-linux-amd64.tar.gz 
+    src: /opt/mattermost-team-4.4.1-linux-amd64.tar.gz 
     dest: /opt/
     copy: no
 
 - name: Ajouter le droit (g+w)
-    file:
-      path: /opt/mattermost
-      mode: g+w
-      recurse: yes
+  file:
+    path: /opt/mattermost
+    mode: g+w
+    recurse: yes
 
 - name: Editer le fichier /opt/mattermost/config/config.json (DriverName)
-    lineinfile:
-      dest: /opt/mattermost/config/config.json
-      regexp: '"DriverName": "mysql",'
-      line: '        "DriverName": "postgres",'
-      backrefs: yes
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"DriverName": "mysql",'
+    line: '"DriverName": "postgres",'
+    backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json (DataSource)
-    lineinfile:
-      dest: /opt/mattermost/config/config.json
-      regexp: '"DataSource":'
-      line: '        "DataSource": "postgres://mmuser:mmuser123@192.168.1.15:5432/mattermost?sslmode=disable&connect_timeout=10",'
-      backrefs: yes
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"DataSource":'
+    line: '"DataSource": "postgres://mmuser:mmuser123@192.168.1.15:5432/mattermost?sslmode=disable&connect_timeout=10",'
+    backrefs: yes
 
 - name: shell
-  shell: sudo -u mattermost ./opt/mattermost/bin/mattermost
+  become_user: mattermost
+  shell: /opt/mattermost/bin/mattermost
 
 - name: ajouter le service mattermost (systemd) RHEL/CentOS 7
-    template:
-      src: templates/mattermost.service
-      dest: /etc/systemd/system/mattermost.service
-      owner: root
-      group: root
-      mode: 0664
+  template:
+    src: templates/mattermost.service
+    dest: /etc/systemd/system/mattermost.service
+    owner: root
+    group: root
+    mode: 0664
 
- - name: Change mattermost directory permissions
-    file:
-      path: /opt/mattermost
-      state: directory
-      owner: "mattermost"
-      group: "mzttermost"
-      recurse: yes
+- name: Change mattermost directory permissions
+  file:
+    path: /opt/mattermost
+    state: directory
+    owner: "mattermost"
+    group: "mattermost"
+    recurse: yes
 
-  - name: Enable Mattermost service
-    service:
-      name: mattermost
-      enabled: yes
-      state: started
+- name: Enable Mattermost service
+  service:
+    name: mattermost
+    enabled: yes
+    state: started
 
 
 
