@@ -1,0 +1,8 @@
+[postgresql]
+192.168.1.15 ansible_ssh_user=user01 ansible_ssh_pass=user01 ansible_sudo_pass=user01
+
+[mattermost]
+192.168.1.47 ansible_ssh_user=user01 ansible_ssh_pass=user01 ansible_sudo_pass=user01
+
+[nginx]
+192.168.60.22 ansible_ssh_user=marwa ansible_ssh_pass=marwa1988 ansible_sudo_pass=user01

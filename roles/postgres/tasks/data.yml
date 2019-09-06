@@ -1,0 +1,69 @@
+---
+- name: install postgres
+  apt:
+     name: 
+       - postgresql
+       - postgresql-contrib
+       
+     state: present
+
+- name: demarrer le service
+  service:
+    name: postgresql
+    enabled: yes
+    state: started
+  
+- name: Creation de la base de donnée
+  become_user: postgres
+  postgresql_db: 
+     name: mattermost
+
+- name: Création de l'utilisateur mmuser
+  become_user: postgres
+  postgresql_user:
+    db: mattermost
+    name: mmuser
+    password: mmuser123
+    priv: ALL
+
+# - name: ensure database is created
+#     become: true
+#     become_user: postgres
+#     postgresql_db:
+#       name: mattermost
+
+#   - name: ensure user has access to database
+#     become: yes
+#     become_user: postgres
+#     postgresql_user:
+#       db: mattermost
+#       name: mmuser
+#       password: 
+#       priv: ALL
+
+- name: configurer la base de donnée pour qu'elle soit accessible
+  lineinfile:
+    dest: /etc/postgresql/11/main/postgresql.conf
+    regexp: '^#listen_addresses ='
+    line: listen_addresses = '*'
+    state: present
+    backrefs: yes
+
+- name: ouvrir l'acces au serveur mattermost
+  lineinfile:
+    dest: /etc/postgresql/11/main/pg_hba.conf
+    regexp: '^local'
+    line: host   all             all                        192.168.1.47/32 md5
+    backrefs: yes
+
+- name: redemmarer le service postgresql
+  service:
+    name: postgresql
+    state: restarted
+
+- name: verifiser les privileges de l'utilisateur mmuser
+  become: yes
+  become_user: postgres
+  postgresql_user: 
+    name: mmuser
+    role_attr_flags: NOSUPERUSER,NOCREATEDB
