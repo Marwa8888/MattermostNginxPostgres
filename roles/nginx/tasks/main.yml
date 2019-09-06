@@ -1,2 +1,21 @@
 ---
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Ajouter le fichier dans conf.d
+  template:
+    src: templates/nginx.conf
+    dest: /etc/nginx/sites-available/mattermost
+
+- name: Create a symbolic link
+  file:
+    src: /etc/nginx/sites-available/mattermost
+    dest: /etc/nginx/sites-enabled/mattermost
+    state: link
+- name: Start NGiNX
+  service:
+    name: nginx
+    state: started
 # tasks file for nginx

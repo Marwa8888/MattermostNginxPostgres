@@ -1,8 +1,8 @@
 ---
 - name: installer les outils
-  hosts: mattermost
+  hosts: nginx
   become: yes
   roles:
     #  - postgres
-     - mattermost
-    #  - nginx
+    #  - mattermost
+     - nginx

@@ -36,7 +36,8 @@
     line: '"DataSource": "postgres://mmuser:mmuser123@192.168.1.15:5432/mattermost?sslmode=disable&connect_timeout=10",'
     backrefs: yes
 
-- name: shell
+# tache manuelle: copier le fichier /opt/mattermost/bin/platform dans /opt/mattermost/bin/mattermost ????
+- name: mettre mattermost en marche
   become_user: mattermost
   shell: /opt/mattermost/bin/mattermost
 
